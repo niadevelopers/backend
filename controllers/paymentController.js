@@ -24,6 +24,9 @@ exports.createPayment = async (req, res) => {
     // Generate unique download token
     const downloadToken = Math.random().toString(36).substring(2, 12);
 
+    console.log("🔗 Callback URL sent to Paystack:", `https://niadevelopers.github.io/frontend/download.html?token=${downloadToken}`);
+
+
     // Initialize Paystack transaction
     const paystackResponse = await axios.post(
       'https://api.paystack.co/transaction/initialize',
@@ -92,4 +95,5 @@ exports.verifyPayment = async (req, res) => {
     res.status(500).json({ error: 'Failed to verify payment' });
   }
 };
+
 
