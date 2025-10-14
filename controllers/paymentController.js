@@ -31,7 +31,7 @@ exports.createPayment = async (req, res) => {
         email,
         amount: paystackAmount, // 32 KES -> 3200
         currency: 'KES',
-        callback_url: `${process.env.BASE_URL}/download.html?token=${downloadToken}`
+        callback_url: `https://niadevelopers.github.io/frontend/download.html?token=${downloadToken}`
       },
       {
         headers: {
@@ -92,3 +92,4 @@ exports.verifyPayment = async (req, res) => {
     res.status(500).json({ error: 'Failed to verify payment' });
   }
 };
+
