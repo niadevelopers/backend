@@ -1,4 +1,3 @@
-// backend/controllers/paymentController.js
 require('dotenv').config();
 const axios = require('axios');
 const Transaction = require('../models/Transaction');
@@ -24,17 +23,14 @@ exports.createPayment = async (req, res) => {
     // Generate unique download token
     const downloadToken = Math.random().toString(36).substring(2, 12);
 
-    //console.log("🔗 Callback URL sent to Paystack:", `https://niadevelopers.github.io/frontend/download.html?token=${downloadToken}`);
-
-
     // Initialize Paystack transaction
     const paystackResponse = await axios.post(
       'https://api.paystack.co/transaction/initialize',
       {
         email,
-        amount: paystackAmount, // 32 KES -> 3200
-        currency: 'KES',
-        callback_url:`${process.env.BASE_URL}/frontend/download.html?token=${downloadToken}`//tried manually modifying the call back route to prevent the base url returning a 404 error
+        amount: paystackAmount, // amount in kobo
+        currency: 'KES'
+        // ❌ No callback_url needed since frontend handles verification/downloads
       },
       {
         headers: {
@@ -53,11 +49,11 @@ exports.createPayment = async (req, res) => {
       amount: totalAmountKES,
       paid: false,
       downloadToken,
-      tokenExpiry: Date.now() + 5 * 60 * 1000,
+      tokenExpiry: Date.now() + 5 * 60 * 1000, // 5 minutes expiry
       reference
     });
 
-    // Send response to frontend (amount in KES for UI display)
+    // Send response to frontend
     res.json({ reference, amount: totalAmountKES, downloadToken });
 
   } catch (err) {
@@ -66,7 +62,7 @@ exports.createPayment = async (req, res) => {
   }
 };
 
-// Verify Paystack payment webhook
+// Verify Paystack payment webhook (called by frontend)
 exports.verifyPayment = async (req, res) => {
   try {
     const { reference } = req.body;
@@ -85,7 +81,7 @@ exports.verifyPayment = async (req, res) => {
     if (response.data.data.status === 'success') {
       transaction.paid = true;
       await transaction.save();
-      return res.json({ success: true });
+      return res.json({ success: true, downloadToken: transaction.downloadToken });
     } else {
       return res.status(400).json({ error: 'Payment not successful' });
     }
@@ -95,8 +91,3 @@ exports.verifyPayment = async (req, res) => {
     res.status(500).json({ error: 'Failed to verify payment' });
   }
 };
-
-
-
-
-
