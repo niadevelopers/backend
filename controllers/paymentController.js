@@ -24,7 +24,7 @@ exports.createPayment = async (req, res) => {
     // Generate unique download token
     const downloadToken = Math.random().toString(36).substring(2, 12);
 
-    console.log("🔗 Callback URL sent to Paystack:", `https://niadevelopers.github.io/frontend/download.html?token=${downloadToken}`);
+    //console.log("🔗 Callback URL sent to Paystack:", `https://niadevelopers.github.io/frontend/download.html?token=${downloadToken}`);
 
 
     // Initialize Paystack transaction
@@ -34,7 +34,7 @@ exports.createPayment = async (req, res) => {
         email,
         amount: paystackAmount, // 32 KES -> 3200
         currency: 'KES',
-        callback_url: `https://niadevelopers.github.io/frontend/download.html?token=${downloadToken}`
+        callback_url: `https://niadevelopers.github.io/download.html?token=${downloadToken}`
       },
       {
         headers: {
@@ -95,5 +95,6 @@ exports.verifyPayment = async (req, res) => {
     res.status(500).json({ error: 'Failed to verify payment' });
   }
 };
+
 
 
