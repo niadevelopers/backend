@@ -12,10 +12,17 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.use(express.static(path.join(__dirname, '..', 'public')));
+// Serve all static files directly from the same directory as the server file
+app.use(express.static(__dirname));
 
+// When payment is successful, send success.html from the same directory
 app.get('/payment/success', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/success.html'));
+  res.sendFile(path.join(__dirname, 'success.html'));
+});
+
+// You can also add a general route for testing
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 
@@ -488,10 +495,11 @@ ${rows}
 });
 
 
-// Fallback to client
+// Fallback to client (for SPA routes or unmatched URLs)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
+
 
 // Start server
 //app.listen(PORT, () => console.log('Server listening on', PORT));
@@ -502,4 +510,5 @@ connectDB().then(() => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     await seedProducts(); // auto seed on launch
   });
+
 });
